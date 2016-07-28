@@ -1,12 +1,31 @@
 import socket
+import struct
 
-class Packet():
-    def __init__(magicno, type, seqno, datalen, data):
+class packet():
+    '''the class that deals with making packets and reading and sending them'''
+    def __init__(self, magicno, type, seqno, datalen, data):
         self.magicno = magicno
         self.type = type
         self.seqno = seqno
         self.datalen = datalen
         self.data = data
+
+    def make_bytes(self):
+        '''makes the packet sendable and turns it into bytes'''
+        header = struct.pack('iiii', self.magicno, self.type, self.seqno, self.datalen)
+        body = self.data
+        packet = header + body
+        return packet
+
+    @classmethod
+    def from_bytes(cls, bytes):
+        '''makes the packet from the bytes'''
+        header, body = bytes[:16], bytes[16:]
+        magicno, type, seqno, datalen = struct.unpack('iiii', header)
+        return cls(magicno, type, seqno, datalen, body)
+
+
+
 
 def channel(csin, csout, crin, crout, sin, rin, precision):
 
@@ -22,14 +41,14 @@ def channel(csin, csout, crin, crout, sin, rin, precision):
 
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csout.bind(('127.0.0.1', csout))
-    sock_csout.connect(('127.0.0.1', csout))
+    sock_csout.connect(('127.0.0.1', sin))
 
     sock_crin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crin.bind(('127.0.0.1', crin))
 
     sock_crout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crout.bind(('127.0.0.1', crout))
-    sock_crout.connect(('127.0.0.1', crout))
+    sock_crout.connect(('127.0.0.1', rin))
 
 #inifinite loop waits of input
 

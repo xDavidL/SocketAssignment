@@ -78,14 +78,14 @@ def main(csin, csout, crin, crout, sin, rin, precision):
 
 def input_received(recieved_into, forward_to, packet):
     '''determines whether to drop the packet and sends it on'''
-        magicno, typ, seqno, datalen, body = packet.from_bytes(packet)
-        u = random.uniform(0, 1)
-        if magicno != 0x497E or u < precision:
-            return "dropped"
-        else:
-            recieved_into.sendto(packeti, ('127.0.0.1', forward_to))
-            packeti, addressi = forward_to.recvfrom(1024)
-            forward_to.send(packeti)
+    magicno, typ, seqno, datalen, body = packet.from_bytes(packet)
+    u = random.uniform(0, 1)
+    if magicno != 0x497E or u < precision:
+        return "dropped"
+    else:
+        recieved_into.sendto(packeti, ('127.0.0.1', forward_to))
+        packeti, addressi = forward_to.recvfrom(1024)
+        forward_to.send(packeti)
 
 
 if __name__ == "__main__":

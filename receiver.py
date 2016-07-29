@@ -13,7 +13,8 @@ def main():
         port_out = int(sys.argv[2])
         c_s_in = int(sys.argv[3])
         file_name = sys.argv[4]
-    except(Exception):
+    except:
+        print(sys.argv)
         print("Port numbers must be integers")
         sys.exit(1)
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
@@ -31,11 +32,11 @@ def main():
 
     if os.path.isfile(file_name):
         print("File already exists.")
-        s_in.close()
-        s_out.close()
+        r_in.close()
+        r_out.close()
         sys.exit(3)
 
-    f = open(args[3], 'w')
+    f = open(file_name, 'w')
     while True:
         expected = 0
 # something about a bolcking call needs to be implemented
@@ -43,7 +44,7 @@ def main():
         if recvd.magicno != 0x497E or recvd.type != "data_packet":
             continue
         ackno_packet = packet(0x497E, "acknowledgement_packet", recvd.seqno, 0)
-		ackno_packet.make_bytes()
+        ackno_packet.make_bytes()
         r_out.send(ackno_packet)
         if recvd.seqno != expected:
             continue

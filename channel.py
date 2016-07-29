@@ -1,11 +1,13 @@
 import socket
 import struct
+import random
+import sys
 
 class packet():
     '''the class that deals with making packets and reading and sending them'''
-    def __init__(self, magicno, type, seqno, datalen, data):
+    def __init__(self, magicno, typ, seqno, datalen, data):
         self.magicno = magicno
-        self.type = type
+        self.type = typ
         self.seqno = seqno
         self.datalen = datalen
         self.data = data
@@ -21,15 +23,24 @@ class packet():
     def from_bytes(cls, bytes):
         '''makes the packet from the bytes'''
         header, body = bytes[:16], bytes[16:]
-        magicno, type, seqno, datalen = struct.unpack('iiii', header)
-        return cls(magicno, type, seqno, datalen, body)
+        magicno, typ, seqno, datalen = struct.unpack('iiii', header)
+        return cls(magicno, typ, seqno, datalen, body)
 
+try:
+    csin = int(sys.argv[1])
+    csout = int(sys.argv[2])
+    crin = int(sys.argv[3])
+    crout = int(sys.argv[4])
+    sin = int(sys.argv[5])
+    rin = int(sys.argv[6])
+    precision = int(sys.argv[7])
+except:
+    print("Port numbers must be integers")
 
-
-
-def channel(csin, csout, crin, crout, sin, rin, precision):
-
-    if (csin <= 1024 or csin >= 64000) and (csout <= 1024 or csout >= 64000) and (crin <= 1024 or crin >= 64000) and (crout <= 1024 or crout >= 64000):
+def main(csin, csout, crin, crout, sin, rin, precision):
+    '''sets up sockets and starts loop'''
+    if (csin <= 1024 or csin >= 64000) and (csout <= 1024 or csout >= 64000) and \
+        (crin <= 1024 or crin >= 64000) and (crout <= 1024 or crout >= 64000):
         print("port numbers not within range", csin, csout, crin, crout)
         return("bad")
     if precision > 1 or precision < 0:
@@ -51,13 +62,31 @@ def channel(csin, csout, crin, crout, sin, rin, precision):
     sock_crout.connect(('127.0.0.1', rin))
 
 #inifinite loop waits of input
-
+    random.seed()
     while True:
 
-        packet, address = sock_csin.recvfrom(1024)
-        packet, address = sock_crin.recvfrom(1024)
+        packeti, addressi = sock_csin.recvfrom(1024)
+        drop = input_received(sock_csin, sock_crout, packeti)
+        if drop == "dropped":
+            continue
 
-#whren input recieved :
-        #checks magicno feild
-        #channel decided if it should drop Packet
-        #send packet on
+        packetr, addressr = sock_crin.recvfrom(1024)
+        drop = input_received(sock_rsin, sock_csout, packetr)
+        if drop == "dropped":
+            break
+
+
+def input_received(recieved_into, forward_to, packet):
+    '''determines whether to drop the packet and sends it on'''
+        magicno, typ, seqno, datalen, body = packet.from_bytes(packet)
+        u = random.uniform(0, 1)
+        if magicno != 0x497E or u < precision:
+            return "dropped"
+        else:
+            recieved_into.sendto(packeti, ('127.0.0.1', forward_to))
+            packeti, addressi = forward_to.recvfrom(1024)
+            forward_to.send(packeti)
+
+
+if __name__ == "__main__":
+    main()

@@ -9,27 +9,27 @@ from channel import packet
 
 def main():
     try:
-        args = [int(x) for x in sys.argv[1:-1]] + [sys.argv[-1]]
-        print(args)
+        port_in = int(sys.argv[1])
+        port_out = int(sys.argv[2])
+        c_s_in = int(sys.argv[3])
+        file_name = sys.argv[4]
     except(Exception):
         print("Port numbers must be integers")
         sys.exit(1)
-    if 1024 >= args[0] >= 64000 or 1024 >= args[1] >= 64000:
+    if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
         print("Ports numbers must be between 1024 and 64000")
         sys.exit(2)
 
-    print(0)
+    #print(0)
 
     r_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     r_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     local_host = "127.0.0.1"
-    r_in.bind((local_host, args[0]))
-    r_out.bind((local_host, args[1]))
-    r_out.connect((local_host, args[2]))
+    r_in.bind((local_host, port_in))
+    r_out.bind((local_host, port_out))
+    r_out.connect((local_host, c_s_in))
 
-    print(args[3])
-
-    if os.path.isfile(args[3]):
+    if os.path.isfile(file_name):
         print("File already exists.")
         s_in.close()
         s_out.close()
@@ -42,8 +42,9 @@ def main():
         recvd, address = r_in.recvfrom(1024)
         if recvd.magicno != 0x497E or recvd.type != "data_packet":
             continue
-        ack_pack = packet(0x497E, "acknowledgement_packet", recvd.seqno, 0)
-        r_out.send(ack_pack)
+        ackno_packet = packet(0x497E, "acknowledgement_packet", recvd.seqno, 0)
+		ackno_packet.make_bytes()
+        r_out.send(ackno_packet)
         if recvd.seqno != expected:
             continue
         expected = 1 - expected

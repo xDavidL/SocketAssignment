@@ -47,16 +47,20 @@ def main():
         if data_len == 0:
 # some encoding / decoding might be necessary around here
             buff_packet = packet(0x497E, "data_packet", seq_num, data_len, None)
+            buff_packet.make_bytes()
             exit_flag = True
         else:
-            buff_packet = packet(0x497E, "data_packet", seq_num, data_len, None)
+            buff_packet = packet(0x497E, "data_packet", seq_num, data_len, data)
+            buff_packet.make_bytes()
             seq_num += 1
 
 
         while True:
             s_out.send(buff_packet)
             packets_sent += 1
-            select.select([s_in], [], [], 1)
+# dont know how select works/ dont know how to get the recvd packet
+            recvd = select.select([s_in], [], [], 1)[0][0]
+# dont know how to determine if there is a response or not
             if no_response:
                 continue
             elif recvd.type != "acknowledgement_packet" or \

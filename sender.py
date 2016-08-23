@@ -54,7 +54,7 @@ def main():
             exit_flag = True
         else:
             buff_packet = Packet(0x497E, data_packet, seq_num, data_len, data)
-            buff_packet.make_bytes()
+            buff_packet = buff_packet.make_bytes()
             seq_num += 1
 
 

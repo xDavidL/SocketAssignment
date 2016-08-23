@@ -7,6 +7,10 @@ import os
 from select import select
 from channel import packet
 
+data_packet = 0
+acknowledgement _ packet = 1
+
+
 def main():
     try:
         port_in = int(sys.argv[1])
@@ -41,9 +45,9 @@ def main():
         expected = 0
 # something about a bolcking call needs to be implemented
         recvd, address = r_in.recvfrom(1024)
-        if recvd.magicno != 0x497E or recvd.type != "data_packet":
+        if recvd.magicno != 0x497E or recvd.type != data_packet:
             continue
-        ackno_packet = packet(0x497E, "acknowledgement_packet", recvd.seqno, 0)
+        ackno_packet = packet(0x497E, acknowledgement_packet, recvd.seqno, 0)
         ackno_packet.make_bytes()
         r_out.send(ackno_packet)
         if recvd.seqno != expected:

@@ -3,6 +3,9 @@ import struct
 import random
 import sys
 
+data_packet = 0
+acknowledgement_packet = 1
+
 class packet():
     '''the class that deals with making packets and reading and sending them'''
     def __init__(self, magicno, typ, seqno, datalen, data):
@@ -33,8 +36,9 @@ try:
     crout = int(sys.argv[4])
     sin = int(sys.argv[5])
     rin = int(sys.argv[6])
-    precision = int(sys.argv[7])
+    precision = float(sys.argv[7])
 except:
+    print(sys.argv)
     print("Port numbers must be integers")
 
 def main(csin, csout, crin, crout, sin, rin, precision):

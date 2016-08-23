@@ -5,7 +5,7 @@ import sys
 import os
 
 from select import select
-from channel import packet
+from channel import Packet
 
 data_packet = 0
 acknowledgement_packet = 1
@@ -17,10 +17,10 @@ def main():
         c_s_in = int(sys.argv[3])
         file_name = sys.argv[4]
     except(Exception):
-        print("Port numbers must be integers")
+        print("Port numbers must be integers (sender)")
         sys.exit(1)
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
-        print("Ports numbers must be between 1024 and 64000")
+        print("Ports numbers must be between 1024 and 64000(sender)")
         sys.exit(2)
 
     #print(0)
@@ -33,7 +33,7 @@ def main():
     s_out.connect((local_host, c_s_in))
 
     if not os.path.isfile(file_name):
-        print("File does not exist.")
+        print("File does not exist.(sender)")
         s_in.close()
         s_out.close()
         sys.exit(3)
@@ -49,11 +49,11 @@ def main():
         data_len = len(data)
         if data_len == 0:
 # some encoding / decoding might be necessary around here
-            buff_packet = packet(0x497E, data_packet, seq_num, data_len, None)
+            buff_packet = Packet(0x497E, data_packet, seq_num, data_len, None)
             buff_packet.make_bytes()
             exit_flag = True
         else:
-            buff_packet = packet(0x497E, data_packet, seq_num, data_len, data)
+            buff_packet = Packet(0x497E, data_packet, seq_num, data_len, data)
             buff_packet.make_bytes()
             seq_num += 1
 

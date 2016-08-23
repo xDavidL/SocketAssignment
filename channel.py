@@ -29,19 +29,22 @@ class packet():
         magicno, typ, seqno, datalen = struct.unpack('iiii', header)
         return cls(magicno, typ, seqno, datalen, body)
 
-try:
-    csin = int(sys.argv[1])
-    csout = int(sys.argv[2])
-    crin = int(sys.argv[3])
-    crout = int(sys.argv[4])
-    sin = int(sys.argv[5])
-    rin = int(sys.argv[6])
-    precision = float(sys.argv[7])
-except:
-    print(sys.argv)
-    print("Port numbers must be integers")
 
-def main(csin, csout, crin, crout, sin, rin, precision):
+def main():
+
+    try:
+        csin = int(sys.argv[1])
+        csout = int(sys.argv[2])
+        crin = int(sys.argv[3])
+        crout = int(sys.argv[4])
+        sin = int(sys.argv[5])
+        rin = int(sys.argv[6])
+        precision = float(sys.argv[7])
+    except:
+        print(sys.argv)
+        print("Port numbers must be integers")
+
+
     '''sets up sockets and starts loop'''
     if (csin <= 1024 or csin >= 64000) and (csout <= 1024 or csout >= 64000) and \
         (crin <= 1024 or crin >= 64000) and (crout <= 1024 or crout >= 64000):
@@ -52,7 +55,7 @@ def main(csin, csout, crin, crout, sin, rin, precision):
         return("bad")
 #set up sockets
     sock_csin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    sock_crsin.bind(('127.0.0.1', csin))
+    sock_csin.bind(('127.0.0.1', csin))
 
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csout.bind(('127.0.0.1', csout))

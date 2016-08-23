@@ -8,7 +8,7 @@ from select import select
 from channel import packet
 
 data_packet = 0
-acknowledgement _ packet = 1
+acknowledgement_packet = 1
 
 
 def main():

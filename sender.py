@@ -61,7 +61,7 @@ def main():
 # dont know how select works/ dont know how to get the recvd packet
             recvd = select.select([s_in], [], [], 1)[0][0]
 # dont know how to determine if there is a response or not
-            if no_response:
+            if recvd == 0:
                 continue
             elif recvd.type != "acknowledgement_packet" or \
                                 recvd.magicno != 0x497E or \

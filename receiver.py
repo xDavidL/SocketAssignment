@@ -5,10 +5,10 @@ import sys
 import os
 
 from select import select
-from channel import packet
+from channel import Packet
 
 data_packet = 0
-acknowledgement _ packet = 1
+acknowledgement_packet = 1
 
 
 def main():
@@ -19,10 +19,10 @@ def main():
         file_name = sys.argv[4]
     except:
         print(sys.argv)
-        print("Port numbers must be integers")
+        print("Port numbers must be integers(receiver)")
         sys.exit(1)
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
-        print("Ports numbers must be between 1024 and 64000")
+        print("Ports numbers must be between 1024 and 64000(receiver)")
         sys.exit(2)
 
     #print(0)

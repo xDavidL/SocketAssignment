@@ -6,7 +6,7 @@ import sys
 data_packet = 0
 acknowledgement_packet = 1
 
-class packet():
+class Packet():
     '''the class that deals with making packets and reading and sending them'''
     def __init__(self, magicno, typ, seqno, datalen, data):
         self.magicno = magicno

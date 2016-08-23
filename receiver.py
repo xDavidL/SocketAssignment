@@ -30,11 +30,11 @@ def main():
     r_out.bind((local_host, port_out))
     r_out.connect((local_host, c_s_in))
 
-    if os.path.isfile(file_name):
-        print("File already exists.")
-        r_in.close()
-        r_out.close()
-        sys.exit(3)
+    #if os.path.isfile(file_name):
+        #print("File already exists.")
+        #r_in.close()
+        #r_out.close()
+        #sys.exit(3)
 
     f = open(file_name, 'w')
     while True:

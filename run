@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# c_s_in c_s_out c_r_in c_r_out s_in r_in P
+python3 channel.py 1111 2222 3333 4444 5555 6666 0 &
+# r_in r_out c_r_in out
+python3 receiver.py 6666 7777 3333 out &
+# s_in s_out c_s_in in
+python3 sender.py 5555 8888 1111 in &
+
+
+

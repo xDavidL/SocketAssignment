@@ -48,7 +48,7 @@ def main():
         if recvd.magicno != 0x497E or recvd.type != data_packet:
             continue
         ackno_packet = packet(0x497E, acknowledgement_packet, recvd.seqno, 0)
-        ackno_packet.make_bytes()
+        ackno_packet = ackno_packet.make_bytes()
         r_out.send(ackno_packet)
         if recvd.seqno != expected:
             continue

@@ -62,6 +62,7 @@ def main():
             s_out.send(buff_packet)
             packets_sent += 1
 # dont know how select works/ dont know how to get the recvd packet
+# select info https://pymotw.com/2/select/ 
             recvd = select.select([s_in], [], [], 1)[0][0]
 # dont know how to determine if there is a response or not
             if recvd == 0:

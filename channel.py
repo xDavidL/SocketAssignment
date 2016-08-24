@@ -2,6 +2,7 @@ import socket
 import struct
 import random
 import sys
+import select
 
 data_packet = 0
 acknowledgement_packet = 1
@@ -22,12 +23,12 @@ class Packet():
         packet = header + body
         return packet
 
-    @classmethod
-    def from_bytes(cls, bytes):
-        '''makes the packet from the bytes'''
-        header, body = bytes[:16], bytes[16:]
-        magicno, typ, seqno, datalen = struct.unpack('iiii', header)
-        return cls(magicno, typ, seqno, datalen, body)
+    #@classmethod
+def from_bytes(bytes):
+    '''makes the packet from the bytes'''
+    header, body = bytes[:16], bytes[16:]
+    magicno, typ, seqno, datalen = struct.unpack('iiii', header)
+    return [magicno, typ, seqno, datalen, body]
 
 
 def main():
@@ -71,27 +72,30 @@ def main():
 #inifinite loop waits of input
     random.seed()
     while True:
+        #selct https://pymotw.com/2/select/
+        readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
+        if sock_csin in readable:
+            packeti, addressi = sock_csin.recvfrom(1024)
+            drop = input_received(sock_csin, crout, sock_crout, packeti, precision)
+            if drop == "dropped":
+                continue
 
-        packeti, addressi = sock_csin.recvfrom(1024)
-        drop = input_received(sock_csin, sock_crout, packeti)
-        if drop == "dropped":
-            continue
-
-        packetr, addressr = sock_crin.recvfrom(1024)
-        drop = input_received(sock_rsin, sock_csout, packetr)
-        if drop == "dropped":
-            break
+        if sock_csin in readable:
+            packetr, addressr = sock_crin.recvfrom(1024)
+            drop = input_received(sock_rsin, csin, sock_csin, packetr, precision)
+            if drop == "dropped":
+                break
 
 
-def input_received(recieved_into, forward_to, packet):
+def input_received(recieved_into, forward_to_port, forward_to, packet, precision):
     '''determines whether to drop the packet and sends it on'''
-    magicno, typ, seqno, datalen, body = packet.from_bytes(packet)
+    magicno, typ, seqno, datalen, body = from_bytes(packet)
     u = random.uniform(0, 1)
     if magicno != 0x497E or u < precision:
         return "dropped"
     else:
-        recieved_into.sendto(packeti, ('127.0.0.1', forward_to))
-        packeti, addressi = forward_to.recvfrom(1024)
+        recieved_into.sendto(packet, ('127.0.0.1', forward_to_port))
+        packet, address = forward_to.recvfrom(1024)
         forward_to.send(packeti)
 
 

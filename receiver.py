@@ -41,8 +41,9 @@ def main():
         #sys.exit(3)
 
     f = open(file_name, 'w')
+    expected = 0
     while True:
-        expected = 0
+
 # something about a blocking call needs to be implemented
         #recvd, address = r_in.recvfrom(1024)
         #from_bytes(recvd)
@@ -64,15 +65,14 @@ def main():
 
 
             if seqno != expected:
-                print("receiver incorrect seqno")
+                print("receiver incorrect seqno", expected, seqno)
                 ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, body)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)
                 print("receiver send acknowledgement_packet")
-
                 break
             else:
-                print("receiver correct seqno")
+                print("receiver correct seqno",  expected, seqno)
                 ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, None)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)

@@ -77,11 +77,13 @@ def main():
         if sock_csin in readable:
             packeti, addressi = sock_csin.recvfrom(1024)
             drop = input_received(sock_csin, crout, sock_crout, packeti, precision)
+            print("packet i from sender = ", from_bytes(packeti), addressi)
             if drop == "dropped":
                 continue
 
-        if sock_csin in readable:
+        if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
+            print("packet r from sender = ", from_bytes(packetr), addressr)            
             drop = input_received(sock_rsin, csin, sock_csin, packetr, precision)
             if drop == "dropped":
                 break

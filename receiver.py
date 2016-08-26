@@ -5,7 +5,7 @@ import sys
 import os
 
 from select import select
-from channel import Packet
+from channel import Packet, from_bytes
 
 data_packet = 0
 acknowledgement_packet = 1
@@ -45,6 +45,9 @@ def main():
         expected = 0
 # something about a bolcking call needs to be implemented
         recvd, address = r_in.recvfrom(1024)
+        from_bytes(recvd)
+        print("receiver !!! recvd =", recvd, address)
+        
         if recvd.magicno != 0x497E or recvd.type != data_packet:
             continue
         ackno_packet = packet(0x497E, acknowledgement_packet, recvd.seqno, 0)

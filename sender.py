@@ -78,7 +78,7 @@ def main():
                                     datalen != 0:
                     print("incorrect arguments")
                     continue
-                print(seqno, seq_num)
+                #print(seqno, seq_num)
                 if seqno == seq_num:
                     print("seqno == correct")
                     seq_num = 1 - seq_num

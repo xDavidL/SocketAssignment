@@ -71,11 +71,13 @@ def main():
 # dont know how to determine if there is a response or not
 
             if len(recvd) == 0:
+                print("len = 0")
                 continue
             elif recvd[0].type != acknowledgement_packet or \
                                 recvd[0].magicno != 0x497E or \
                                 recvd[0].dataLen != 0:
                 continue
+                print("incorrect arguments")
             elif rcvd.seqno == seq_num:
                 seq_num = 1 - seq_num
                 if exit_flag:

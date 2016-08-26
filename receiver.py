@@ -15,10 +15,10 @@ def main():
     try:
         port_in = int(sys.argv[1])
         port_out = int(sys.argv[2])
-        c_s_in = int(sys.argv[3])
+        c_r_in = int(sys.argv[3])
         file_name = sys.argv[4]
     except:
-        print(sys.argv)
+        print("receiver syss.args", sys.argv)
         print("Port numbers must be integers(receiver)")
         sys.exit(1)
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
@@ -32,7 +32,7 @@ def main():
     local_host = "127.0.0.1"
     r_in.bind((local_host, port_in))
     r_out.bind((local_host, port_out))
-    r_out.connect((local_host, c_s_in))
+    r_out.connect((local_host, c_r_in))
 
     #if os.path.isfile(file_name):
         #print("File already exists.")
@@ -43,7 +43,7 @@ def main():
     f = open(file_name, 'w')
     while True:
         expected = 0
-# something about a bolcking call needs to be implemented
+# something about a blocking call needs to be implemented
         recvd, address = r_in.recvfrom(1024)
         from_bytes(recvd)
         print("receiver !!! recvd =", recvd, address)

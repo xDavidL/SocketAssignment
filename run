@@ -1,12 +1,12 @@
 #!/bin/bash
 
 
-# r_in r_out c_r_in out
-python3 receiver.py 6669 7779 3339 out &
+# r_in r_out c_r_in output_file
+python3 receiver.py 6469 7479 3439 out &
 
 # c_s_in c_s_out c_r_in c_r_out s_in r_in P
-python3 channel.py 1119 2229 3339 4449 5559 6669 0 &
+python3 channel.py 1419 2429 3439 4449 5459 6469 0 &
 
-#s_in s_out c_s_in in
-python3 sender.py 5559 8889 1119 input &
+#s_in s_out c_s_in input_file
+python3 sender.py 5459 8489 1419 input &
 

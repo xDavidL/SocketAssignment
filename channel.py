@@ -57,7 +57,7 @@ def main():
 #set up sockets
     sock_csin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csin.bind(('127.0.0.1', csin))
-    sock_csin.connect(('127.0.0.1', crout))
+    #sock_csin.connect(('127.0.0.1', crout))
 
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csout.bind(('127.0.0.1', csout))
@@ -65,7 +65,7 @@ def main():
 
     sock_crin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crin.bind(('127.0.0.1', crin))
-    sock_crin.connect(('127.0.0.1', csout))
+    #sock_crin.connect(('127.0.0.1', csout))
 
     sock_crout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crout.bind(('127.0.0.1', crout))
@@ -75,7 +75,9 @@ def main():
     random.seed()
     while True:
         #selct https://pymotw.com/2/select/
+        #readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
         readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
+        print("channel readable = ", readable)
         if sock_csin in readable:
             packeti, addressi = sock_csin.recvfrom(1024)
           #  sock_csin.sendto(packeti, addressi);            
@@ -85,6 +87,10 @@ def main():
 
             if drop == "dropped":
                 continue
+            else:
+                print("send packet on")
+                sock_crout.send(packeti)
+                print("SENTT !!!!  12344")
 
         if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
@@ -107,14 +113,17 @@ def input_received(recieved_into, forward_to_port, forward_to, packet, precision
     if magicno != 0x497E or u < precision:
         print("DROPPED !!!!", magicno)
         return "dropped"
-    else:
-        recieved_into.send(packet)
-        print("line 1 :^(")
-        packet, address = forward_to.recvfrom(1024)
-        print("line 2 :^)")
-        forward_to.send(packeti)
-        print("SENTT !!!!  12344")
+    return 0
+  #  else:
+       # recieved_into.sendto(packet, ("127.0.0.1", forward_to_port))
+       # print("line 1 :^(")
+        #packet = forward_to.recv(1024)
+    #    print("line 1 :^)")
+      #  forward_to.send(packet)
+      #  print("SENTT !!!!  12344")
 
 
 if __name__ == "__main__":
     main()
+
+

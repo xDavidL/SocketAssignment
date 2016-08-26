@@ -4,7 +4,7 @@ import socket
 import sys
 import os
 
-from select import select
+import select
 from channel import Packet
 
 data_packet = 0
@@ -63,9 +63,9 @@ def main():
             packets_sent += 1
 # dont know how select works/ dont know how to get the recvd packet
 # select info https://pymotw.com/2/select/ 
-            recvd = select.select([s_in], [], [], 1)[0][0]
+            recvd, _, _ = select.select([s_in], [], [], 1)
 # dont know how to determine if there is a response or not
-            if recvd == 0:
+            if len(recvd) == 0:
                 continue
             elif recvd.type != acknowledgement_packet or \
                                 recvd.magicno != 0x497E or \

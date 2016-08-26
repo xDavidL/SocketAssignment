@@ -55,23 +55,23 @@ def main():
         else:
             buff_packet = Packet(0x497E, data_packet, seq_num, data_len, data)
             print("This is buff_packet before make_bytes", buff_packet)
-            buff_packet = buff_packet.make_bytes()
+            packet_buffer = buff_packet.make_bytes()
             print("This is buff_packet after make_bytes", buff_packet)
             seq_num += 1
 
 
         while True:
-            print(buff_packet)
-            s_out.send(buff_packet)
+            print("sender packet buffer =", packet_buffer)
+            s_out.send(packet_buffer)
             packets_sent += 1
 # dont know how select works/ dont know how to get the recvd packet
 # select info https://pymotw.com/2/select/
             recvd, _, _ = select.select([s_in], [], [], 1)
-            print("sender received = ", recvd)
+            print("sender confirmation received = ", recvd)
 # dont know how to determine if there is a response or not
 
             if len(recvd) == 0:
-                break
+                continue
             elif recvd[0].type != acknowledgement_packet or \
                                 recvd[0].magicno != 0x497E or \
                                 recvd[0].dataLen != 0:

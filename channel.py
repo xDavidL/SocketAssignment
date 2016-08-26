@@ -20,7 +20,7 @@ class Packet():
         '''makes the packet sendable and turns it into bytes'''
         header = struct.pack('iiii', self.magicno, self.type, self.seqno, self.datalen)
         body = self.data
-        packet = header + body
+        packet = header + body if body != None else header
         return packet
 
     #@classmethod
@@ -57,6 +57,7 @@ def main():
 #set up sockets
     sock_csin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csin.bind(('127.0.0.1', csin))
+    sock_csin.connect(('127.0.0.1', crout))
 
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_csout.bind(('127.0.0.1', csout))
@@ -64,6 +65,7 @@ def main():
 
     sock_crin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crin.bind(('127.0.0.1', crin))
+    sock_crin.connect(('127.0.0.1', csout))
 
     sock_crout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crout.bind(('127.0.0.1', crout))
@@ -76,8 +78,11 @@ def main():
         readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
         if sock_csin in readable:
             packeti, addressi = sock_csin.recvfrom(1024)
-            drop = input_received(sock_csin, crout, sock_crout, packeti, precision)
+          #  sock_csin.sendto(packeti, addressi);            
             print("packet i from sender = ", from_bytes(packeti), addressi)
+
+            drop = input_received(sock_csin, crout, sock_crout, packeti, precision)
+
             if drop == "dropped":
                 continue
 
@@ -98,12 +103,17 @@ def input_received(recieved_into, forward_to_port, forward_to, packet, precision
     '''determines whether to drop the packet and sends it on'''
     magicno, typ, seqno, datalen, body = from_bytes(packet)
     u = random.uniform(0, 1)
+    print("something 123")
     if magicno != 0x497E or u < precision:
+        print("DROPPED !!!!", magicno)
         return "dropped"
     else:
-        recieved_into.sendto(packet, ('127.0.0.1', forward_to_port))
+        recieved_into.send(packet)
+        print("line 1 :^(")
         packet, address = forward_to.recvfrom(1024)
+        print("line 2 :^)")
         forward_to.send(packeti)
+        print("SENTT !!!!  12344")
 
 
 if __name__ == "__main__":

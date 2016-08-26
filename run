@@ -2,11 +2,11 @@
 
 
 # r_in r_out c_r_in out
-python3 receiver.py 6667 7777 3337 out &
+python3 receiver.py 6669 7779 3339 out &
 
 # c_s_in c_s_out c_r_in c_r_out s_in r_in P
-python3 channel.py 1117 2227 3337 4447 5557 6667 1 &
+python3 channel.py 1119 2229 3339 4449 5559 6669 0 &
 
 #s_in s_out c_s_in in
-python3 sender.py 5557 8887 1117 input &
+python3 sender.py 5559 8889 1119 input &
 

@@ -86,6 +86,11 @@ def main():
             if drop == "dropped":
                 break
 
+    sock_csin.close()
+    sock_csout.close()
+    sock_crin.close()
+    sock_crout.close()
+
 
 def input_received(recieved_into, forward_to_port, forward_to, packet, precision):
     '''determines whether to drop the packet and sends it on'''

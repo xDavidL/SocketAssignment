@@ -20,7 +20,7 @@ def main():
         print("Port numbers must be integers (sender)")
         sys.exit(1)
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
-        print("Ports numbers must be between 1024 and 64000(sender)")
+        print("Ports numbers must be between 1024 and 64000 (sender)")
         sys.exit(2)
 
     #print(0)
@@ -76,11 +76,11 @@ def main():
                 if typ != acknowledgement_packet or \
                                     magicno != 0x497E or \
                                     datalen != 0:
-                    print("incorrect arguments")
+                    #print("incorrect packet values (sender)")
                     continue
                 #print(seqno, seq_num)
                 if seqno == seq_num:
-                    print("seqno == correct")
+                    #print("seqno == correct sender")
                     seq_num = 1 - seq_num
                     if exit_flag:
                         print("Packets Sent: " + str(packets_sent))

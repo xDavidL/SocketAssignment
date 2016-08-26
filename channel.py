@@ -45,7 +45,7 @@ def main():
         rin = int(sys.argv[6])
         precision = float(sys.argv[7])
     except:
-        print(sys.argv)
+        #print(sys.argv)
         print("Port numbers must be integers")
 
 
@@ -106,7 +106,7 @@ def main():
 
                 sock_csout.send(packetr)
                 #print("channel sent on acknowledgement_packet to sender ", packeti)
-    print("Closing channel sockets")
+    #print("Closing channel sockets")
     sock_csin.close()
     sock_csout.close()
     sock_crin.close()

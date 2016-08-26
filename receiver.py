@@ -47,7 +47,6 @@ def main():
         recvd, address = r_in.recvfrom(1024)
         from_bytes(recvd)
         print("receiver !!! recvd =", recvd, address)
-        
         if recvd.magicno != 0x497E or recvd.type != data_packet:
             continue
         ackno_packet = packet(0x497E, acknowledgement_packet, recvd.seqno, 0)

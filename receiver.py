@@ -4,7 +4,7 @@ import socket
 import sys
 import os
 
-from select import select
+import select
 from channel import Packet, from_bytes
 
 data_packet = 0
@@ -44,24 +44,50 @@ def main():
     while True:
         expected = 0
 # something about a blocking call needs to be implemented
-        recvd, address = r_in.recvfrom(1024)
-        from_bytes(recvd)
-        print("receiver !!! recvd =", recvd, address)
-        if recvd.magicno != 0x497E or recvd.type != data_packet:
-            continue
-        ackno_packet = packet(0x497E, acknowledgement_packet, recvd.seqno, 0)
-        ackno_packet = ackno_packet.make_bytes()
-        r_out.send(ackno_packet)
-        if recvd.seqno != expected:
-            continue
-        expected = 1 - expected
-        if recvd.datalen == 0:
-            f.close()
-            r_in.close()
-            r_out.close()
-            sys.exit(0)
-# probably have to do some decoding stuff here
-        f.write(recvd.data)
+        #recvd, address = r_in.recvfrom(1024)
+        #from_bytes(recvd)
+        readable, _, _ = select.select([r_in], [], [], 5)
+
+
+# dont know how to determine if there is a response or not
+        print(" In the receiver ")
+
+        if r_in in readable:
+            packet = r_in.recv(1024)
+
+            magicno, typ, seqno, datalen, body = from_bytes(packet)
+            print("receiver got packet of     ", magicno, typ, seqno, datalen, body)
+            if typ != data_packet or \
+                                magicno != 0x497E:
+                print("receiver incorrect arguments")
+                continue
+
+
+            if seqno != expected:
+                print("receiver incorrect seqno")
+                ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, body)
+                ackno_packet = ackno_packet.make_bytes()
+                r_out.send(ackno_packet)
+                print("receiver send acknowledgement_packet")
+
+                break
+            else:
+                print("receiver correct seqno")
+                ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, None)
+                ackno_packet = ackno_packet.make_bytes()
+                r_out.send(ackno_packet)
+                print("receiver send acknowledgement_packet")
+                expected = 1 - expected
+            if datalen == 0:
+                f.close()
+                r_in.close()
+                r_out.close()
+                break
+
+            print(body.decode("utf-8"))
+            f.write(body.decode("utf-8"))
+
+
 
 
 

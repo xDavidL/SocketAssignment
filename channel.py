@@ -19,8 +19,11 @@ class Packet():
     def make_bytes(self):
         '''makes the packet sendable and turns it into bytes'''
         header = struct.pack('iiii', self.magicno, self.type, self.seqno, self.datalen)
-        body = self.data
-        packet = header + body if body != None else header
+        if self.data != None:
+            body = self.data
+            packet = header + body
+        else:
+            packet = header
         return packet
 
     #@classmethod
@@ -76,40 +79,44 @@ def main():
     while True:
         #selct https://pymotw.com/2/select/
         #readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
-        readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
-        print("channel readable = ", readable)
-        if sock_csin in readable:
-            packeti, addressi = sock_csin.recvfrom(1024)
-          #  sock_csin.sendto(packeti, addressi);            
-            print("packet i from sender = ", from_bytes(packeti), addressi)
+        readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 5)
 
-            drop = input_received(sock_csin, crout, sock_crout, packeti, precision)
+        if sock_csin in readable:
+
+            packeti, addressi = sock_csin.recvfrom(1024)
+          #  sock_csin.sendto(packeti, addressi);
+            print("packet received from sender = ", from_bytes(packeti), addressi)
+
+            drop = input_received(packeti, precision)
 
             if drop == "dropped":
                 continue
             else:
-                print("send packet on")
+
                 sock_crout.send(packeti)
-                print("SENTT !!!!  12344")
+                print("channel send on to receiver", packeti)
 
         if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
-            print("packet r from sender = ", from_bytes(packetr), addressr)            
-            drop = input_received(sock_rsin, csin, sock_csin, packetr, precision)
+            print("Received confirmation packets from receiver = ", from_bytes(packetr), addressr)
+            drop = input_received(packetr, precision)
             if drop == "dropped":
-                break
+                continue
+            else:
 
+                sock_csout.send(packetr)
+                print("channel sent on acknowledgement_packet to sender ", packeti)
+    print("Closing channel sockets")
     sock_csin.close()
     sock_csout.close()
     sock_crin.close()
     sock_crout.close()
 
 
-def input_received(recieved_into, forward_to_port, forward_to, packet, precision):
+def input_received(packet, precision):
     '''determines whether to drop the packet and sends it on'''
     magicno, typ, seqno, datalen, body = from_bytes(packet)
     u = random.uniform(0, 1)
-    print("something 123")
     if magicno != 0x497E or u < precision:
         print("DROPPED !!!!", magicno)
         return "dropped"
@@ -125,5 +132,3 @@ def input_received(recieved_into, forward_to_port, forward_to, packet, precision
 
 if __name__ == "__main__":
     main()
-
-

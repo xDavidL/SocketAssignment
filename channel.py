@@ -85,7 +85,7 @@ def main():
 
             packeti, addressi = sock_csin.recvfrom(1024)
           #  sock_csin.sendto(packeti, addressi);
-            print("packet received from sender = ", from_bytes(packeti), addressi)
+            #print("packet received from sender = ", from_bytes(packeti), addressi)
 
             drop = input_received(packeti, precision)
 
@@ -94,18 +94,18 @@ def main():
             else:
 
                 sock_crout.send(packeti)
-                print("channel send on to receiver", packeti)
+            #    print("channel send on to receiver", packeti)
 
         if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
-            print("Received confirmation packets from receiver = ", from_bytes(packetr), addressr)
+            #print("Received confirmation packets from receiver = ", from_bytes(packetr), addressr)
             drop = input_received(packetr, precision)
             if drop == "dropped":
                 continue
             else:
 
                 sock_csout.send(packetr)
-                print("channel sent on acknowledgement_packet to sender ", packeti)
+                #print("channel sent on acknowledgement_packet to sender ", packeti)
     print("Closing channel sockets")
     sock_csin.close()
     sock_csout.close()
@@ -118,7 +118,7 @@ def input_received(packet, precision):
     magicno, typ, seqno, datalen, body = from_bytes(packet)
     u = random.uniform(0, 1)
     if magicno != 0x497E or u < precision:
-        print("DROPPED !!!!", magicno)
+        #print("DROPPED !!!!", magicno)
         return "dropped"
     return 0
   #  else:

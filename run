@@ -1,6 +1,6 @@
 #!/bin/bash
-
-
+COUNTER=0
+while [ $COUNTER -lt 10 ]; do
 # r_in r_out c_r_in output_file
 python3 receiver.py 6468 7478 3438 out &
 
@@ -9,3 +9,5 @@ python3 channel.py 1418 2428 3438 4448 5458 6468 0 &
 
 #s_in s_out c_s_in input_file
 python3 sender.py 5458 8488 1418 testof51200 &
+let COUNTER=COUNTER+1
+done

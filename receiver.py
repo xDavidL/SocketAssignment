@@ -57,26 +57,26 @@ def main():
             packet = r_in.recv(1024)
 
             magicno, typ, seqno, datalen, body = from_bytes(packet)
-            print("receiver got packet of     ", magicno, typ, seqno, datalen, body)
+        #    print("receiver got packet of     ", magicno, typ, seqno, datalen, body)
             if typ != data_packet or \
                                 magicno != 0x497E:
-                print("receiver incorrect arguments")
+            #    print("receiver incorrect arguments")
                 continue
 
 
             if seqno != expected:
-                print("receiver incorrect seqno", expected, seqno)
+            #    print("receiver incorrect seqno", expected, seqno)
                 ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, body)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)
-                print("receiver send acknowledgement_packet")
+        #        print("receiver send acknowledgement_packet")
                 break
             else:
-                print("receiver correct seqno",  expected, seqno)
+            #    print("receiver correct seqno",  expected, seqno)
                 ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, None)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)
-                print("receiver send acknowledgement_packet")
+            #    print("receiver send acknowledgement_packet")
                 expected = 1 - expected
             if datalen == 0:
                 f.close()
@@ -84,7 +84,7 @@ def main():
                 r_out.close()
                 break
 
-            print(body.decode("utf-8"))
+            #print(body.decode("utf-8"))
             f.write(body.decode("utf-8"))
 
 

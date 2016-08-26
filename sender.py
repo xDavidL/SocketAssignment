@@ -54,13 +54,13 @@ def main():
             exit_flag = True
         else:
             buff_packet = Packet(0x497E, data_packet, seq_num, data_len, data)
-            print("This is buff_packet before make_bytes", buff_packet)
+            #print("This is buff_packet before make_bytes", buff_packet)
             packet_buffer = buff_packet.make_bytes()
-            print("This is buff_packet after make_bytes", buff_packet)
+            #print("This is buff_packet after make_bytes", buff_packet)
 
 
         while True:
-            print("Sender send packed of ", packet_buffer)
+        #    print("Sender send packed of ", packet_buffer)
             s_out.send(packet_buffer)
             packets_sent += 1
 # dont know how select works/ dont know how to get the recvd packet
@@ -72,7 +72,7 @@ def main():
                 packet = s_in.recv(1024)
 
                 magicno, typ, seqno, datalen, body = from_bytes(packet)
-                print("sender confirmation received of ", magicno, typ, seqno, datalen, body)
+                #print("sender confirmation received of ", magicno, typ, seqno, datalen, body)
                 if typ != acknowledgement_packet or \
                                     magicno != 0x497E or \
                                     datalen != 0:

@@ -79,7 +79,7 @@ def main():
     while True:
         #selct https://pymotw.com/2/select/
         #readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 1)
-        readable, writable, exceptional = select.select([sock_csin, sock_crin], [sock_csout, sock_crout], [sock_csin, sock_crin, sock_csout, sock_crout], 5)
+        readable, _, _ = select.select([sock_csin, sock_crin], [], [], 1)
 
         if sock_csin in readable:
 
@@ -101,6 +101,7 @@ def main():
             #print("Received confirmation packets from receiver = ", from_bytes(packetr), addressr)
             drop = input_received(packetr, precision)
             if drop == "dropped":
+
                 continue
             else:
 
@@ -117,8 +118,9 @@ def input_received(packet, precision):
     '''determines whether to drop the packet and sends it on'''
     magicno, typ, seqno, datalen, body = from_bytes(packet)
     u = random.uniform(0, 1)
+    #print("the random number is ",u)
     if magicno != 0x497E or u < precision:
-        #print("DROPPED !!!!", magicno)
+        #print("DROPPED !!!!", u)
         return "dropped"
     return 0
   #  else:

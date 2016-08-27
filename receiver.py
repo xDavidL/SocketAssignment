@@ -7,8 +7,9 @@ import os
 import select
 from channel import Packet, from_bytes
 
-data_packet = 0
-acknowledgement_packet = 1
+DATA_PACKET = 0
+ACKNOWLEDGEMENT_PACKET = 1
+MAGICNO = 0x497E
 
 
 def main():
@@ -21,6 +22,8 @@ def main():
         #print("receiver syss.args", sys.argv)
         print("Port numbers must be integers (receiver)")
         sys.exit(1)
+    if len({port_in, port_out, c_r_in}) != 3:
+        print("Port numbers must be unique")
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
         print("Ports numbers must be between 1024 and 64000 (receiver)")
         sys.exit(2)
@@ -47,7 +50,7 @@ def main():
 # something about a blocking call needs to be implemented
         #recvd, address = r_in.recvfrom(1024)
         #from_bytes(recvd)
-        readable, _, _ = select.select([r_in], [], [], 5)
+        readable, _, _ = select.select([r_in], [], [], 1)
 
 
 # dont know how to determine if there is a response or not
@@ -57,27 +60,28 @@ def main():
             packet = r_in.recv(1024)
 
             magicno, typ, seqno, datalen, body = from_bytes(packet)
-        #    print("receiver got packet of     ", magicno, typ, seqno, datalen, body)
-            if typ != data_packet or \
-                                magicno != 0x497E:
+            if typ != DATA_PACKET or \
+                                magicno != MAGICNO:
             #    print("receiver incorrect arguments")
                 continue
 
-
+            
             if seqno != expected:
-            #    print("receiver incorrect seqno", expected, seqno)
-                ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, body)
+                #print("receiver incorrect seqno", expected, seqno)
+                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0, None)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)
-        #        print("receiver send acknowledgement_packet")
-                break
+        #        print("receiver send ACKNOWLEDGEMENT_PACKET")
+                continue
             else:
             #    print("receiver correct seqno",  expected, seqno)
-                ackno_packet = Packet(0x497E, acknowledgement_packet, seqno, 0, None)
+                #print("receiver got correct packet of ")
+                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0, None)
                 ackno_packet = ackno_packet.make_bytes()
                 r_out.send(ackno_packet)
-            #    print("receiver send acknowledgement_packet")
+            #    print("receiver send ACKNOWLEDGEMENT_PACKET")
                 expected = 1 - expected
+                f.write(body.decode("utf-8"))
             if datalen == 0:
                 f.close()
                 r_in.close()
@@ -85,7 +89,6 @@ def main():
                 break
 
             #print(body.decode("utf-8"))
-            f.write(body.decode("utf-8"))
 
 
 

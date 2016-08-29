@@ -19,13 +19,13 @@ def main():
         file_name = sys.argv[4]
     except(Exception):
         print("Port numbers must be integers (sender)")
-        sys.exit(1)
+        return 1
     if len({port_in, port_out, c_s_in}) != 3:
         print("port numbers must be unique")
-        sys.exit(2)
+        return 2
     if 1024 >= port_in >= 64000 or 1024 >= port_out >= 64000:
         print("Ports numbers must be between 1024 and 64000 (sender)")
-        sys.exit(3)
+        return 3
 
     s_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -38,7 +38,7 @@ def main():
         print("File does not exist.(sender)")
         s_in.close()
         s_out.close()
-        sys.exit(4)
+        return 4
 
     f = open(file_name, 'rb')
     seq_num = 0
@@ -56,13 +56,19 @@ def main():
             packet_buffer = buff_packet.make_bytes()
 
         while True:
-            s_out.send(packet_buffer)
+            try:
+                s_out.send(packet_buffer)
+            except Exception as e:
+                print(e)
+                print("Sender could not send data to channel")
+                f.close()
+                s_in.close()
+                s_out.close()
+                return 5
             packets_sent += 1
             recvd, _, _ = select.select([s_in], [], [], 1)
-
             if s_in in recvd:
                 packet = s_in.recv(1024)
-
                 magicno, typ, seqno, datalen, body = from_bytes(packet)
                 if typ != ACKNOWLEDGEMENT_PACKET or \
                                     magicno != MAGICNO or \
@@ -76,6 +82,7 @@ def main():
     f.close()
     s_in.close()
     s_out.close()
+    return 0
 
 
 if __name__ == "__main__":

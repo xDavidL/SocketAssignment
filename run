@@ -5,13 +5,13 @@
 
 
 # r_in r_out c_r_in output_file
-python3 receiver.py 6469 7479 3439 output &
+python3 receiver.py 6469 7479 3439 out.mp3 &
 
 # c_s_in c_s_out c_r_in c_r_out s_in r_in P
 python3 channel.py 1419 2429 3439 4449 5459 6469 0 &
 
 #s_in s_out c_s_in input_file
-python3 sender.py 5459 8489 1419 testof51200 &
+python3 sender.py 5459 8489 1419 test.mp3 &
 
 
 

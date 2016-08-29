@@ -19,7 +19,8 @@ class Packet():
 
     def make_bytes(self):
         '''makes the packet sendable and turns it into bytes'''
-        header = struct.pack('iiii', self.magicno, self.type, self.seqno, self.datalen)
+        header = struct.pack('iiii', self.magicno, self.type, self.seqno, 
+                self.datalen)
         if self.data != None:
             body = self.data
             packet = header + body
@@ -84,10 +85,8 @@ def main():
             packetr, addressr = sock_crin.recvfrom(1024)
             drop = input_received(packetr, precision)
             if drop == "dropped":
-
                 continue
             else:
-
                 sock_csout.send(packetr)
     sock_csin.close()
     sock_csout.close()

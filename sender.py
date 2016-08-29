@@ -30,12 +30,20 @@ def main():
     s_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     local_host = "127.0.0.1"
-    s_in.bind((local_host, port_in))
-    s_out.bind((local_host, port_out))
+    try:
+        s_in.bind((local_host, port_in))
+        s_out.bind((local_host, port_out))
+    except Exception as e:
+        print(e)
+        print("Ports", s_in, "and", s_out, "are already in use (sender)")
+        r_in.close()
+        r_out.close()
+        return 4
+
     s_out.connect((local_host, c_s_in))
 
     if not os.path.isfile(file_name):
-        print("File does not exist.(sender)")
+        print("File", file_name,  "does not exist.(sender)")
         s_in.close()
         s_out.close()
         return 4

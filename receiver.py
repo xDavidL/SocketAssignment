@@ -31,15 +31,22 @@ def main():
     r_in = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     r_out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     local_host = "127.0.0.1"
-    r_in.bind((local_host, port_in))
-    r_out.bind((local_host, port_out))
-    r_out.connect((local_host, c_r_in))
-
-    if os.path.isfile(file_name):
-        print("File", file_name, "already exists.")
+    try:
+        r_in.bind((local_host, port_in))
+        r_out.bind((local_host, port_out))
+    except Exception as e:
+        print(e)
+        print("Ports", r_in, "and", r_out, "are already in use (receiver)")
         r_in.close()
         r_out.close()
         return 4
+    r_out.connect((local_host, c_r_in))
+
+    if os.path.isfile(file_name):
+        print("File", file_name, "already exists.(receiver)")
+        r_in.close()
+        r_out.close()
+        return 5
 
     f = open(file_name, 'wb')
     expected = 0
@@ -62,7 +69,7 @@ def main():
                     f.close()
                     r_in.close()
                     r_out.close()
-                    return 5
+                    return 6
                 continue
             else:
                 ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0, 
@@ -76,7 +83,7 @@ def main():
                     f.close()
                     r_in.close()
                     r_out.close()
-                    return 5
+                    return 6
                 expected = 1 - expected
                 f.write(body)
             if datalen == 0:

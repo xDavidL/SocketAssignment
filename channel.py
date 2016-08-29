@@ -47,28 +47,40 @@ def main():
         precision = float(sys.argv[7])
     except:
         print("Port numbers must be integers")
+        return 1
 
     '''sets up sockets and starts loop'''
     if (1024 >= csin >= 64000) or (1024 >= csout >= 64000) or \
             (1024 >=crin >= 64000) or (1024 >= crout >= 64000):
         print("port numbers not within range", csin, csout, crin, crout)
-        return("bad")
+        return 2
     if len({csin, csout, crin, crout, sin, rin}) != 6:
         print("port numbers must be unique")
-        return("bad")
+        return 3
     if precision > 1 or precision < 0:
         print("precision is not in range", precision)
-        return("bad")
+        return 4
 #set up sockets
     sock_csin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    sock_csin.bind(('127.0.0.1', csin))
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    sock_csout.bind(('127.0.0.1', csout))
-    sock_csout.connect(('127.0.0.1', sin))
     sock_crin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    sock_crin.bind(('127.0.0.1', crin))
     sock_crout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    sock_crout.bind(('127.0.0.1', crout))
+    
+    try:
+        sock_csin.bind(('127.0.0.1', csin))
+        sock_csout.bind(('127.0.0.1', csout))
+        sock_crin.bind(('127.0.0.1', crin))
+        sock_crout.bind(('127.0.0.1', crout))
+    except Exception as e:
+        print(e)
+        print("Port/s could not be bound to/ Address already in use (channel)")
+        sock_csin.close()
+        sock_csout.close()
+        sock_crin.close()
+        sock_crout.close()
+        return 5
+        
+    sock_csout.connect(('127.0.0.1', sin))
     sock_crout.connect(('127.0.0.1', rin))
 #inifinite loop waits of input
     random.seed()
@@ -92,6 +104,7 @@ def main():
     sock_csout.close()
     sock_crin.close()
     sock_crout.close()
+    return 0
 
 
 def input_received(packet, precision):
@@ -100,7 +113,7 @@ def input_received(packet, precision):
     u = random.uniform(0, 1)
     if magicno != MAGICNO or u < precision:
         return "dropped"
-    return 0
+    return "success"
 
 
 if __name__ == "__main__":

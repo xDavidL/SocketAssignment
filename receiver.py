@@ -36,12 +36,12 @@ def main():
     r_out.connect((local_host, c_r_in))
 
     if os.path.isfile(file_name):
-        print("File already exists.")
+        print("File", file_name, "already exists.")
         r_in.close()
         r_out.close()
         return 4
 
-    f = open(file_name, 'w')
+    f = open(file_name, 'wb')
     expected = 0
     while True:
         readable, _, _ = select.select([r_in], [], [], 1)
@@ -78,7 +78,7 @@ def main():
                     r_out.close()
                     return 5
                 expected = 1 - expected
-                f.write(body.decode("utf-8"))
+                f.write(body)
             if datalen == 0:
                 f.close()
                 r_in.close()

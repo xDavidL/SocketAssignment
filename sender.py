@@ -36,8 +36,8 @@ def main():
     except Exception as e:
         print(e)
         print("Port/s are already in use (sender)")
-        r_in.close()
-        r_out.close()
+        s_in.close()
+        s_out.close()
         return 4
 
     s_out.connect((local_host, c_s_in))
@@ -52,6 +52,7 @@ def main():
     seq_num = 0
     exit_flag = False
     packets_sent = 0
+    termination_count = 0
     while not exit_flag:
         data = f.read(512)
         data_len = len(data)
@@ -64,6 +65,10 @@ def main():
             packet_buffer = buff_packet.make_bytes()
 
         while True:
+            if exit_flag:
+                termination_count += 1
+                if termination_count >= 10:
+                    break
             try:
                 s_out.send(packet_buffer)
             except Exception as e:

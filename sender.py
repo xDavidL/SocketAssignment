@@ -35,7 +35,7 @@ def main():
         s_out.bind((local_host, port_out))
     except Exception as e:
         print(e)
-        print("Ports", s_in, "and", s_out, "are already in use (sender)")
+        print("Port/s are already in use (sender)")
         r_in.close()
         r_out.close()
         return 4

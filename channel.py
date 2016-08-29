@@ -92,14 +92,22 @@ def main():
             if drop == "dropped":
                 continue
             else:
-                sock_crout.send(packeti)
+                try:
+                    sock_crout.send(packeti)
+                except Exception as e:
+                    print(e)
+                    print("Channel could not send packet to receiver.")
         if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
             drop = input_received(packetr, precision)
             if drop == "dropped":
                 continue
             else:
-                sock_csout.send(packetr)
+                try:
+                    sock_csout.send(packetr)
+                except Exception as e:
+                    print(e)
+                    print("Channel could not send packet to sender.")
     sock_csin.close()
     sock_csout.close()
     sock_crin.close()

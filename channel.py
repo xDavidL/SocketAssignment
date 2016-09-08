@@ -19,7 +19,7 @@ class Packet():
 
     def make_bytes(self):
         '''makes the packet sendable and turns it into bytes'''
-        header = struct.pack('iiii', self.magicno, self.type, self.seqno, 
+        header = struct.pack('iiii', self.magicno, self.type, self.seqno,
                 self.datalen)
         if self.data != None:
             body = self.data
@@ -65,7 +65,7 @@ def main():
     sock_csout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crin = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
     sock_crout = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-    
+
     try:
         sock_csin.bind(('127.0.0.1', csin))
         sock_csout.bind(('127.0.0.1', csout))
@@ -79,7 +79,7 @@ def main():
         sock_crin.close()
         sock_crout.close()
         return 5
-        
+
     sock_csout.connect(('127.0.0.1', sin))
     sock_crout.connect(('127.0.0.1', rin))
 #inifinite loop waits of input
@@ -97,6 +97,7 @@ def main():
                 except Exception as e:
                     print(e)
                     print("Channel could not send packet to receiver.")
+                    break;
         if sock_crin in readable:
             packetr, addressr = sock_crin.recvfrom(1024)
             drop = input_received(packetr, precision)
@@ -121,9 +122,9 @@ def input_received(packet, precision):
     u = random.uniform(0, 1)
     if magicno != MAGICNO or u < precision:
         return "dropped"
+
     return "success"
 
 
 if __name__ == "__main__":
     main()
-

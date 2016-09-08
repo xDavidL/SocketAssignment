@@ -58,7 +58,7 @@ def main():
             if typ != DATA_PACKET or magicno != MAGICNO:
                 continue
             if seqno != expected:
-                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0, 
+                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0,
                         None)
                 ackno_packet = ackno_packet.make_bytes()
                 try:
@@ -72,8 +72,8 @@ def main():
                     return 6
                 continue
             else:
-                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0, 
-                        None)
+                ackno_packet = Packet(MAGICNO, ACKNOWLEDGEMENT_PACKET, seqno, 0,
+                            None)
                 ackno_packet = ackno_packet.make_bytes()
                 try:
                     r_out.send(ackno_packet)
